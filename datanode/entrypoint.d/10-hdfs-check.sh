@@ -5,4 +5,3 @@ if [ ! -d $datadir ]; then
   echo "Datanode data directory not found: $datadir"
   exit 2
 fi
-

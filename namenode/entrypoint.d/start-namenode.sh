@@ -1,7 +1,7 @@
 #!/bin/bash
 
-namedir=`echo $HDFS_CONF_dfs_namenode_name_dir | perl -pe 's#file://##'`
-if [ ! -d $namedir ]; then
+namedir=$(echo "$HDFS_CONF_dfs_namenode_name_dir" | perl -pe 's#file://##')
+if [ ! -d "$namedir" ]; then
   echo "Namenode name directory not found: $namedir"
   exit 2
 fi
@@ -11,8 +11,9 @@ if [ -z "$CLUSTER_NAME" ]; then
   exit 2
 fi
 
-if [ "`ls -A $namedir`" == "" ]; then
+if [ "$(ls -A "$namedir")" == "" ]; then
   echo "Formatting namenode name directory: $namedir"
-  $HADOOP_PREFIX/bin/hadoop namenode -format $CLUSTER_NAME 
+  hdfs namenode -format "$CLUSTER_NAME"
 fi
 
+hdfs namenode

@@ -1,19 +1,15 @@
-FROM alerman/docker-compose-base
+FROM base:1.0.0
 
 ARG CDH_VERSION
 ARG HADOOP_VERSION
 
-RUN yum -y install epel-release && \
-    rm -rf /var/cache/yum/*
+COPY cloudera-cdh5.repo /etc/yum.repos.d
+RUN rpm --import https://archive.cloudera.com/cdh5/redhat/7/x86_64/cdh/RPM-GPG-KEY-cloudera && \
+    yum -y clean all && \
+    yum -y install hadoop
 
-COPY cloudera-cdh.repo /etc/yum.repos.d
-
-RUN rpm --import https://archive.cloudera.com/cm6/6.3.0/redhat7/yum/RPM-GPG-KEY-cloudera 
-RUN yum -y install hadoop && \
-    rm -rf /var/cache/yum/*
-
-RUN yum -y install net-tools && \
-    rm -rf /var/cache/yum/*
+RUN yum -y clean all && \
+    yum -y install net-tools
 
 ENV CDH_VERSION=${CDH_VERSION}
 ENV HADOOP_PREFIX=/opt/hadoop/hadoop-${HADOOP_VERSION}-cdh${CDH_VERSION}

@@ -2,7 +2,7 @@ version: "2"
 
 services:
   namenode:
-    image: dtspence/hadoop-namenode:compose-0.3.0-cdh6.2.0
+    image: dtspence/hadoop-namenode:compose-2.6.0-cdh5.9.1
     container_name: namenode
     volumes:
       - hadoop_namenode:/hadoop/dfs/name
@@ -12,62 +12,56 @@ services:
       - ./hadoop.env
   
   resourcemanager:
-    image: dtspence/hadoop-resourcemanager:compose-0.3.0-cdh6.2.0
+    image: dtspence/hadoop-resourcemanager:compose-2.6.0-cdh5.9.1
     container_name: resourcemanager
-    depends_on:
-      - namenode
-      - datanode1
-      - datanode2
+    environment:
+      SERVICE_PRECONDITION: "namenode:50070 datanode1:50075 datanode2:50075"
     env_file:
       - ./hadoop.env
-  
+
   historyserver:
-    image: dtspence/hadoop-historyserver:compose-0.3.0-cdh6.2.0
+    image: dtspence/hadoop-historyserver:compose-2.6.0-cdh5.9.1
     container_name: historyserver
     ports:
       - "19888"
-    depends_on:
-      - namenode
-      - datanode1
-      - datanode2
+    environment:
+      SERVICE_PRECONDITION: "namenode:50070 datanode1:50075 resourcemanager:8088"
     env_file:
       - ./hadoop.env
   
   nodemanager1:
-    image: dtspence/hadoop-nodemanager:compose-0.3.0-cdh6.2.0
+    image: dtspence/hadoop-nodemanager:compose-2.6.0-cdh5.9.1
     container_name: nodemanager1
-    depends_on:
-      - namenode
-      - datanode1
-      - datanode2
+    environment:
+      SERVICE_PRECONDITION: "namenode:50070 datanode1:50075 resourcemanager:8088"
     env_file:
       - ./hadoop.env
   
   datanode1:
-    image: dtspence/hadoop-datanode:compose-0.3.0-cdh6.2.0
+    image: dtspence/hadoop-datanode:compose-2.6.0-cdh5.9.1
     container_name: datanode1
-    depends_on:
-      - namenode
+    environment:
+      SERVICE_PRECONDITION: "namenode:50070"
     volumes:
       - hadoop_datanode1:/hadoop/dfs/data
     env_file:
       - ./hadoop.env
   
   datanode2:
-    image: dtspence/hadoop-datanode:compose-0.3.0-cdh6.2.0
+    image: dtspence/hadoop-datanode:compose-2.6.0-cdh5.9.1
     container_name: datanode2
-    depends_on:
-      - namenode
+    environment:
+      SERVICE_PRECONDITION: "namenode:50070"
     volumes:
       - hadoop_datanode2:/hadoop/dfs/data
     env_file:
       - ./hadoop.env
-  
+
   datanode3:
-    image: dtspence/hadoop-datanode:compose-0.3.0-cdh6.2.0
+    image: dtspence/hadoop-datanode:compose-2.6.0-cdh5.9.1
     container_name: datanode3
-    depends_on:
-      - namenode
+    environment:
+      SERVICE_PRECONDITION: "namenode:50070"
     volumes:
       - hadoop_datanode3:/hadoop/dfs/data
     env_file:
@@ -78,4 +72,3 @@ volumes:
   hadoop_datanode1:
   hadoop_datanode2:
   hadoop_datanode3:
-  hadoop_historyserver:

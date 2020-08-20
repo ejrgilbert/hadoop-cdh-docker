@@ -1,9 +1,11 @@
 version: '2'
 services:
   test:
-    image: dtspence/hadoop-test:compose-0.3.0-cdh6.2.0
+    image: dtspence/hadoop-test:compose-2.6.0-cdh5.9.1
     container_name: test
     depends_on:
       - namenode
+    environment:
+      SERVICE_PRECONDITION: "namenode:50070 datanode1:50075 resourcemanager:8088"
     env_file:
       - ./hadoop.env
