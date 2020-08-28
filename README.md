@@ -1,5 +1,16 @@
 # Hadoop Docker
 
+
+
+# TODO create gitlab job
+# Want stack for these datawave versions:
+# - 2.10.0-SNAPSHOT
+# - 2.8.8
+# - 2.8.8-hadoop3
+# TODO build images for the following versions:
+# - 2.6.0-cdh5.9.1
+# - 3.0.0-cdh6.2.0
+
 ## Overview
 
 Provides a docker-compose environment for running Cloudera Hadoop Hadoop.

@@ -8,8 +8,8 @@ function with_backoff() {
   local attempt=0
   local exitCode=0
 
-  while [ $attempt -le $max_attempts ]; do
-    echo "Attempt $attempt of $max_attempts: $@"
+  while [ $attempt -le "$max_attempts" ]; do
+    echo "Attempt $attempt of $max_attempts: $*"
     set +e
     "$@"
     exitCode=$?
@@ -20,25 +20,25 @@ function with_backoff() {
       break
     fi
 
-    echo "Retrying $@ in $timeout.." 1>&2
-    sleep $timeout
+    echo "Retrying $* in $timeout.." 1>&2
+    sleep "$timeout"
     attempt=$(( attempt + 1 ))
     timeout=$(( timeout * 2 ))
   done
 
   if [[ $exitCode != 0 ]]; then
-    echo "Fail: $@ failed to complete after $max_attempts attempts" 1>&2
+    echo "Fail: $* failed to complete after $max_attempts attempts" 1>&2
   elif [[ $exitCode -gt 128 ]]; then
-    echo "Fail: $@ aborted by user" 1>&2
+    echo "Fail: $* aborted by user" 1>&2
   else
-    echo "Success: $@ completed after $attempt attempts" 1>&2
+    echo "Success: $* completed after $attempt attempts" 1>&2
   fi
 
   return $exitCode
 }
 
 function is_port_open() {
-  if [[ $(nmap -sT $1 -p $2 --host-timeout 1m) == *"open"* ]]; then
+  if [[ $(nmap -sT "$1" -p "$2" --host-timeout 1m) == *"open"* ]]; then
     return 0
   else
     return 1
@@ -47,7 +47,7 @@ function is_port_open() {
 
 function wait_until_port_open() {
   echo "Checking for TCP connection to $1:$2..." 1>&2
-  with_backoff is_port_open $1 $2
+  with_backoff is_port_open "$1" "$2"
 }
 
 hdfs_is_available() {
@@ -59,6 +59,7 @@ hdfs_is_available() {
 function wait_until_hdfs_is_available() {
   with_backoff hdfs dfsadmin -safemode wait
     with_backoff hdfs_is_available
+    # shellcheck disable=SC2050
     if [ hdfs_is_available == 0 ]; then
       echo "HDFS not available before timeout. Exiting ..." 1>&2
     exit 1

@@ -6,15 +6,13 @@ ARG HADOOP_VERSION
 COPY cloudera-cdh5.repo /etc/yum.repos.d
 RUN rpm --import https://archive.cloudera.com/cdh5/redhat/7/x86_64/cdh/RPM-GPG-KEY-cloudera && \
     yum -y clean all && \
-    yum -y install hadoop
-
-RUN yum -y clean all && \
-    yum -y install net-tools
+    yum -y install hadoop net-tools && \
+    yum -y clean all
 
 ENV CDH_VERSION=${CDH_VERSION}
 ENV HADOOP_PREFIX=/opt/hadoop/hadoop-${HADOOP_VERSION}-cdh${CDH_VERSION}
 ENV HADOOP_HOME /usr/lib/hadoop
-ENV HADOOP_CONF_DIR /etc/hadoop/conf
+ENV HADOOP_CONF_DIR /etc/hadoop/conf/
 ENV HADOOP_COMMON_HOME /usr/lib/hadoop
 ENV HADOOP_HDFS_HOME /usr/lib/hadoop-hdfs
 ENV HADOOP_YARN_HOME /usr/lib/hadoop-yarn
@@ -23,9 +21,16 @@ ENV HADOOP_MAPRED_HOME /usr/lib/hadoop-mapreduce
 ENV JAVA_HOME=/usr/lib/jvm/jre
 ENV MULTIHOMED_NETWORK=1
 
-RUN ln -s ${HADOOP_PREFIX}/etc/hadoop ${HADOOP_CONF_DIR} && \
+RUN usermod -a -G hadoop root && \
+    usermod -a -G hadoop datawave && \
+    usermod -a -G hadoop accumulo && \
+    ln -s ${HADOOP_PREFIX}/etc/hadoop ${HADOOP_CONF_DIR} && \
     ln -s ${HADOOP_HOME} ${HADOOP_PREFIX} && \
-    mkdir -p /opt/scripts
+    mkdir -p /opt/scripts && \
+    mkdir -p /srv/data/hadoop && \
+    chown -R hdfs:hdfs /srv/data/hadoop && \
+    mkdir -p /srv/logs/hadoop && \
+    chown -R hdfs:hdfs /srv/logs/hadoop
 
 ENV USER=root
 ENV PATH $HADOOP_PREFIX/bin/:$PATH
