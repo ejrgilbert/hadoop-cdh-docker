@@ -1,6 +1,6 @@
 # Hadoop Docker
 
-
+Download information for CDH 5.9.x: https://docs.cloudera.com/documentation/enterprise/release-notes/topics/cdh_vd_cdh_download_59.html
 
 # TODO create gitlab job
 # Want stack for these datawave versions:
